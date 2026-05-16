@@ -108,12 +108,57 @@ GND is the ground pin.
 
 ## STM 32 CUBE PROGRAM :
 
+```
+#include "main.h"
+#include "stdio.h"
 
+uint16_t readValue;
+ADC_HandleTypeDef hadc;
+
+UART_HandleTypeDef huart2;
+
+void SystemClock_Config(void);
+static void MX_GPIO_Init(void);
+static void MX_ADC_Init(void);
+static void MX_USART2_UART_Init(void);
+
+int main(void)
+{
+  HAL_Init();
+  SystemClock_Config();
+  MX_GPIO_Init();
+  MX_ADC_Init();
+  MX_USART2_UART_Init();
+ 
+  while (1)
+  {
+	  HAL_ADC_Start(&hadc);
+	  HAL_ADC_PollForConversion(&hadc,HAL_MAX_DELAY);
+	  readValue = HAL_ADC_GetValue(&hadc);
+	  printf("Read value : %d\n", readValue);
+
+	  uint32_t soilmoist_Percentage = 100 - (readValue / 40.96);
+	  printf("Soil moisture : %ld %%\n",soilmoist_Percentage);
+	  HAL_Delay(2000);
+  }
+ 
+}
+
+int __io_putchar(int ch)
+{
+	HAL_UART_Transmit(&huart2,(uint8_t*)&ch,1,0xFFFF);
+	return ch;
+}
+
+```
 
 ## Output screen shots on serial monitor   :
- 
- 
- 
- 
+
+ <img width="960" height="600" alt="Screenshot 2026-05-15 142826" src="https://github.com/user-attachments/assets/bcc284b8-5c5b-4bf0-8d24-c4604ebfdb36" />
+
+## Circuit Screenshot
+
+<img width="1600" height="1200" alt="exp5_iot" src="https://github.com/user-attachments/assets/f4787156-8858-4639-9be6-9e6f201cc9ed" />
+
 ## Result :
 Interfacing a Analog Input (soil moisture sensor) with ARM microcontroller based IOT development is executed and the results visualized on serial monitor 
